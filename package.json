@@ -46,6 +46,7 @@
             "css": "github:systemjs/plugin-css@^0.1.23",
             "d3": "npm:d3@^3.5",
             "decaf-common": "github:biosustain/decaf-frontend-common@master",
+            "ng-file-upload": "npm:ng-file-upload@^12.2.13",
             "plotly.js": "npm:plotly.js@^1.16.2"
         },
         "devDependencies": {},

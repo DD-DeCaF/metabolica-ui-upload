@@ -3,6 +3,7 @@
 	"globalDependencies": {
 		"angular": "registry:dt/angular#1.5.0+20160709055139",
 		"jquery": "registry:dt/jquery#1.10.0+20160704162008",
+		"ng-file-upload": "registry:dt/ng-file-upload#0.0.0+20160928134715",
 		"node": "registry:dt/node#6.0.0+20160720070758"
 	}
 }

@@ -51,6 +51,7 @@ SystemJS.config({
 		"os": "npm:jspm-nodelibs-os@0.2.0",
 		"path": "npm:jspm-nodelibs-path@0.2.0",
 		"plotly.js": "npm:plotly.js@1.16.2",
+		"ng-file-upload": "npm:ng-file-upload@12.2.13",
 		"process": "npm:jspm-nodelibs-process@0.2.0",
 		"punycode": "npm:jspm-nodelibs-punycode@0.2.0",
 		"querystring": "npm:jspm-nodelibs-querystring@0.2.0",

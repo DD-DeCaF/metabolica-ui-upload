@@ -1,19 +1,21 @@
 <md-content class="layout-padding" layout="column" ng-cloak>
 	<div class="layout-padding">
-		<form ng-submit="TheoreticalYieldController.submit()">
-			<div ng-repeat="element in TheoreticalYieldController.formConfig">
+		<form ng-submit="UploadController.submit()">
+			<div ng-repeat="element in UploadController.formConfig">
 				<label>{{ element.title }}</label>
-				<md-select ng-model="TheoreticalYieldController.searchTexts[element.attr]">
+				<md-select ng-model="UploadController.searchTexts[element.attr]">
 					<md-optgroup label="{{ element.title }}">
 						<md-option ng-repeat="item in element.list()"
-								   ng-value="item.value">{{ item.display }}</md-option>
+								   ng-value="item.value">{{ item.display }}
+						</md-option>
 					</md-optgroup>
 				</md-select>
 			</div>
 			<md-button type="submit">Build graphs</md-button>
 		</form>
-		<md-progress-linear ng-if="TheoreticalYieldController.isWaiting" md-mode="indeterminate"></md-progress-linear>
-		<div ng-repeat="(key, value) in TheoreticalYieldController.data[TheoreticalYieldController.searchTexts['samples']]" md-dynamic-height md-border-bottom>
+		<md-progress-linear ng-if="UploadController.isWaiting" md-mode="indeterminate"></md-progress-linear>
+		<div ng-repeat="(key, value) in UploadController.data[UploadController.searchTexts['samples']]"
+			 md-dynamic-height md-border-bottom>
 			<h4>Phase {{ key }}</h4>
 			<md-grid-list md-cols="2" md-row-height="350">
 				<md-grid-tile ng-repeat='(metabolite, metaboliteData) in value.metabolites'>
@@ -22,5 +24,9 @@
 			</md-grid-list>
 		</div>
 	</div>
+	<div>
+		<md-button ng-click="UploadController.hello()">sdf</md-button>
+	</div>
+	<md-input type="file" name="media-file" >file...</md-input>
 </md-content>
 

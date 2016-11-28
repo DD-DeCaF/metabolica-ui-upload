@@ -1,33 +1,37 @@
-// Turn of WS TS inspection for the 'decaf-common' import.
+import * as angular from 'angular';
+import * as ngFileUpload from 'ng-file-upload';
+
 // noinspection TypeScriptCheckImport
 import {Config, dirname} from 'decaf-common';
-import './theoretical-yield.component.css!';
+import './upload.component.css!';
 import theoreticalYieldService, {TheoreticalYieldService} from './theoretical-yield.service';
 import plotService, {PlotService} from './plot.service';
 
 
-export const COMPONENT_NAME = 'theoretical-yield';
-const theoreticalYield = angular.module(COMPONENT_NAME, [
+
+export const COMPONENT_NAME = 'upload';
+const upload = angular.module(COMPONENT_NAME, [
+	'ngFileUpload',
 	theoreticalYieldService.name,
 	plotService.name
 ]);
 
-theoreticalYield.config(function (platformProvider) {
+upload.config(function (platformProvider) {
 	platformProvider
 		.register(COMPONENT_NAME)
 		.state(COMPONENT_NAME, {
 			url: `/${COMPONENT_NAME}`,
 			views: {
 				'content@': {
-					templateUrl: `${dirname(module.id)}/theoretical-yield.component.html`,
-					controller: TheoreticalYieldController,
-					controllerAs: 'TheoreticalYieldController'
+					templateUrl: `${dirname(module.id)}/upload.component.html`,
+					controller: UploadController,
+					controllerAs: 'UploadController'
 				}
 			}
 		})
 });
 
-class TheoreticalYieldController {
+class UploadController {
 	private $timeout: angular.ITimeoutService;
 	theoreticalYieldService: TheoreticalYieldService;
 	plotService: PlotService;
@@ -38,7 +42,8 @@ class TheoreticalYieldController {
 	searchTexts: any;
 	data: any;
 
-	constructor($timeout, TheoreticalYieldService: TheoreticalYieldService, PlotService: PlotService) {
+	constructor($timeout, TheoreticalYieldService: TheoreticalYieldService, PlotService: PlotService, Upload: ngFileUpload) {
+		console.log(Upload)
 		this.$timeout = $timeout;
 		this.theoreticalYieldService = TheoreticalYieldService;
 		this.plotService = PlotService;
@@ -61,6 +66,7 @@ class TheoreticalYieldController {
 		this.searchTexts = {};
 		this.data = {};
 	}
+
 
 	querySearch (query, data) {
 		return query ? data.filter( this.createFilterFor(query) ) : data;
@@ -107,6 +113,20 @@ class TheoreticalYieldController {
 		});
 	}
 
+	hello(){
+		console.info('hello ballo...?');
+	}
+
+	uploadFile(){
+		console.info('hello upload...?');
+		if(file) {
+			file.upload = Upload.upload({
+				// url: 'http://localhost:7000',
+				data: {file: file}
+			});
+		}
+	}
+
 	submit() {
 		let currentSample = this.searchTexts['samples'];
 		this.isWaiting = true;
@@ -130,4 +150,4 @@ class TheoreticalYieldController {
 	}
 }
 
-export default theoreticalYield;
+export default upload;

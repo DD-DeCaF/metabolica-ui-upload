@@ -1,0 +1,10 @@
+<md-content class="layout-padding" layout="column" ng-cloak>
+	<div>
+		<input id="fileInput" name="file" type="file" class="ng-hide" multiple>
+		<md-button ng-click="UploadController.uploadFile()" id="uploadButton" class="md-raised md-primary"> Choose Files </md-button>
+		<md-button ng-click="UploadController.hello()">Hello</md-button>
+		<md-button class="md-raised" type="file" ngf-select="UploadController.uploadFile(file, errFile)">NgFileUpload</md-button>
+	</div>
+	<md-input type="file" name="media-file" >file...</md-input>
+</md-content>
+

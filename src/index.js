@@ -8,7 +8,6 @@ function __export(m) {
 // Change `'./example.component'` to where ever your component resides (of course within the source folder).
 __export(require('./upload.component'));
 var upload_component_2 = require('./upload.component');
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = upload_component_2.default;
-
+exports.__esModule = true;
+exports["default"] = upload_component_2["default"];
 //# sourceMappingURL=index.js.map
