@@ -1,5 +1,6 @@
+/// <reference path="../typings/index.d.ts"/>
 import * as angular from 'angular';
-import * as ngFileUpload from 'ng-file-upload';
+import 'ng-file-upload';
 
 // noinspection TypeScriptCheckImport
 import {Config, dirname} from 'decaf-common';
@@ -41,9 +42,11 @@ class UploadController {
 	formConfig: any[];
 	searchTexts: any;
 	data: any;
+	ngUpload: angular.angularFileUpload.IUploadService;
 
-	constructor($timeout, TheoreticalYieldService: TheoreticalYieldService, PlotService: PlotService, Upload: ngFileUpload) {
-		console.log(Upload)
+	constructor($timeout, TheoreticalYieldService: TheoreticalYieldService, PlotService: PlotService, Upload: angular.angularFileUpload.IUploadService) {
+		console.log(Upload);
+		this.ngUpload = Upload;
 		this.$timeout = $timeout;
 		this.theoreticalYieldService = TheoreticalYieldService;
 		this.plotService = PlotService;
@@ -120,7 +123,7 @@ class UploadController {
 	uploadFile(){
 		console.info('hello upload...?');
 		if(file) {
-			file.upload = Upload.upload({
+			file.upload = this.ngUpload.upload({
 				// url: 'http://localhost:7000',
 				data: {file: file}
 			});
