@@ -1,2 +1,7 @@
+table, td {
+	border-bottom: 1px solid gainsboro;
+	border-collapse: collapse;
+	padding: 5px;
+}
 
 /*# sourceMappingURL=upload.component.css.map */

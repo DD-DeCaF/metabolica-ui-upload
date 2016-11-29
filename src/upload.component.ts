@@ -1,20 +1,15 @@
 /// <reference path="../typings/index.d.ts"/>
 import * as angular from 'angular';
-import 'ng-file-upload';
 
 // noinspection TypeScriptCheckImport
 import {Config, dirname} from 'decaf-common';
 import './upload.component.css!';
-import theoreticalYieldService, {TheoreticalYieldService} from './theoretical-yield.service';
-import plotService, {PlotService} from './plot.service';
-
+import uploadService, {UploadService} from './upload.service';
 
 
 export const COMPONENT_NAME = 'upload';
 const upload = angular.module(COMPONENT_NAME, [
-	'ngFileUpload',
-	theoreticalYieldService.name,
-	plotService.name
+	uploadService.name,
 ]);
 
 upload.config(function (platformProvider) {
@@ -33,123 +28,72 @@ upload.config(function (platformProvider) {
 });
 
 class UploadController {
-	private $timeout: angular.ITimeoutService;
-	theoreticalYieldService: TheoreticalYieldService;
-	plotService: PlotService;
-	isWaiting: boolean;
-	experiments: any[];
-	samples: any[];
-	formConfig: any[];
-	searchTexts: any;
-	data: any;
-	ngUpload: angular.angularFileUpload.IUploadService;
+	private $timeout:angular.ITimeoutService;
+	isWaiting:boolean;
+	uploadService:UploadService;
+	data:any;
 
-	constructor($timeout, TheoreticalYieldService: TheoreticalYieldService, PlotService: PlotService, Upload: angular.angularFileUpload.IUploadService) {
-		console.log(Upload);
-		this.ngUpload = Upload;
+	constructor($timeout, UploadService:UploadService) {
+		this.uploadService = UploadService;
 		this.$timeout = $timeout;
-		this.theoreticalYieldService = TheoreticalYieldService;
-		this.plotService = PlotService;
-		this.experiments = [];
-		this.samples = [];
 		this.isWaiting = false;
-		this.loadLists();
-		this.formConfig = [
-			{
-				'title': 'Experiment',
-				'attr': 'experiments',
-				'list': () => this.experiments
-			},
-			{
-				'title': 'Sample',
-				'attr': 'samples',
-				'list': () => this.samples[this.searchTexts.experiments]
+		this.data = {
+			media: {files: {file: ''}, status: 'na', what: 'media', order: ['file']},
+			strains: {files: {file: ''}, status: 'na', what: 'strains', order: ['file']},
+			experiment: {
+				files: {samples: '', physiology: ''},
+				status: 'na',
+				what: 'experiment',
+				order: ['samples file', 'physiology file'],
 			}
-		];
-		this.searchTexts = {};
-		this.data = {};
-	}
-
-
-	querySearch (query, data) {
-		return query ? data.filter( this.createFilterFor(query) ) : data;
-	}
-
-	createFilterFor(query) {
-		var lowercaseQuery = angular.lowercase(query);
-		return function filterFn(option) {
-			return (angular.lowercase(option.display).indexOf(lowercaseQuery) !== -1);
 		};
 	}
 
-	loadLists() {
-		this.loadExperiments();
+	setFile(file, what, which) {
+		this.data[what].files[which] = file;
 	}
 
-	loadExperiments() {
-		this.theoreticalYieldService.loadExperiments()
-			.then((data: any) => {
-				data.data.forEach((value) => {
-					this.experiments.push({
-						value: value.id,
-						display: value.name
-					})
-				});
-				this.loadSamples();
-			})
-	}
-
-	loadSamples() {
-		this.experiments.forEach((value) => {
-			let experimentId = value.value;
-			this.samples[experimentId] = [];
-			this.theoreticalYieldService.loadSamples(experimentId)
-				.then((data: any) => {
-						data.data.forEach((sample) => {
-							this.samples[experimentId].push({
-								value: sample.id,
-								display: sample.name
-							})
-						})
-					}
-				)
-		});
-	}
-
-	hello(){
-		console.info('hello ballo...?');
-	}
-
-	uploadFile(){
-		console.info('hello upload...?');
-		if(file) {
-			file.upload = this.ngUpload.upload({
-				// url: 'http://localhost:7000',
-				data: {file: file}
-			});
+	buildFileList(what) {
+		var fileList = [];
+		for (var i = 0; i < this.data[what].order.length; i++) {
+			if (this.data[what].files[this.data[what].order[i]]) {
+				fileList.push(this.data[what].files[this.data[what].order[i]]);
+			}
 		}
+		return fileList;
 	}
 
 	submit() {
-		let currentSample = this.searchTexts['samples'];
-		this.isWaiting = true;
-		this.theoreticalYieldService.sampleYields(currentSample)
-			.then((data: any) =>
-				{
-					this.isWaiting = false;
-					this.data[currentSample] = data.data;
-					angular.forEach(this.data[currentSample], (phaseYields, phase) => {
-						angular.forEach(phaseYields.metabolites, (metaboliteYield, metabolite) => {
-							var id = 'plot_' + phase + '_' + metabolite;
-							angular.element(document.getElementById(id)).ready(() => this.plotService.plotPhase(id, metabolite, phaseYields['growth-rate'], metaboliteYield));
-						});
-					});
-				},
-				// Error
-				([status, dataResponse]) => {
-					this.isWaiting = false;
+		for (var what in this.data) {
+			if (this.data.hasOwnProperty(what)) {
+				var fileList = this.buildFileList(what);
+				if (fileList.length == this.data[what].order.length) {
+					this.isWaiting = true;
+					this.data[what].status = 'na';
+					var data = {file: fileList, what: what, project_id: 'TST'};
+					this.uploadService.uploadFile(data)
+						.then(function (what, ref) {
+								return function (response) {
+									ref.isWaiting = false;
+									ref.data[what].response = response.data;
+									console.log(response.data.valid);
+									if (response.data.valid) {
+										ref.data[what].status = 'ok';
+									} else {
+										ref.data[what].status = 'ng';
+									}
+								}
+							}(what, this),
+							//error
+							([status, dataResponse]) => {
+								console.log(status);
+								console.log(dataResponse);
+								this.isWaiting = false;
+							}
+						);
 				}
-			);
+			}
+		}
 	}
 }
 

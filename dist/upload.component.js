@@ -1,15 +1,13 @@
 "use strict";
+/// <reference path="../typings/index.d.ts"/>
 var angular = require('angular');
 // noinspection TypeScriptCheckImport
 var decaf_common_1 = require('decaf-common');
 require('./upload.component.css!');
-var theoretical_yield_service_1 = require('./theoretical-yield.service');
-var plot_service_1 = require('./plot.service');
+var upload_service_1 = require('./upload.service');
 exports.COMPONENT_NAME = 'upload';
 var upload = angular.module(exports.COMPONENT_NAME, [
-    'ngFileUpload',
-    theoretical_yield_service_1.default.name,
-    plot_service_1.default.name
+    upload_service_1.default.name,
 ]);
 upload.config(function (platformProvider) {
     platformProvider
@@ -26,104 +24,66 @@ upload.config(function (platformProvider) {
     });
 });
 var UploadController = (function () {
-    function UploadController($timeout, TheoreticalYieldService, PlotService, Upload) {
-        var _this = this;
-        console.log(Upload);
+    function UploadController($timeout, UploadService) {
+        this.uploadService = UploadService;
         this.$timeout = $timeout;
-        this.theoreticalYieldService = TheoreticalYieldService;
-        this.plotService = PlotService;
-        this.experiments = [];
-        this.samples = [];
         this.isWaiting = false;
-        this.loadLists();
-        this.formConfig = [
-            {
-                'title': 'Experiment',
-                'attr': 'experiments',
-                'list': function () { return _this.experiments; }
-            },
-            {
-                'title': 'Sample',
-                'attr': 'samples',
-                'list': function () { return _this.samples[_this.searchTexts.experiments]; }
+        this.data = {
+            media: { files: { file: '' }, status: 'na', what: 'media', order: ['file'] },
+            strains: { files: { file: '' }, status: 'na', what: 'strains', order: ['file'] },
+            experiment: {
+                files: { samples: '', physiology: '' },
+                status: 'na',
+                what: 'experiment',
+                order: ['samples file', 'physiology file'],
             }
-        ];
-        this.searchTexts = {};
-        this.data = {};
-    }
-    UploadController.prototype.querySearch = function (query, data) {
-        return query ? data.filter(this.createFilterFor(query)) : data;
-    };
-    UploadController.prototype.createFilterFor = function (query) {
-        var lowercaseQuery = angular.lowercase(query);
-        return function filterFn(option) {
-            return (angular.lowercase(option.display).indexOf(lowercaseQuery) !== -1);
         };
+    }
+    UploadController.prototype.setFile = function (file, what, which) {
+        this.data[what].files[which] = file;
     };
-    UploadController.prototype.loadLists = function () {
-        this.loadExperiments();
-    };
-    UploadController.prototype.loadExperiments = function () {
-        var _this = this;
-        this.theoreticalYieldService.loadExperiments()
-            .then(function (data) {
-            data.data.forEach(function (value) {
-                _this.experiments.push({
-                    value: value.id,
-                    display: value.name
-                });
-            });
-            _this.loadSamples();
-        });
-    };
-    UploadController.prototype.loadSamples = function () {
-        var _this = this;
-        this.experiments.forEach(function (value) {
-            var experimentId = value.value;
-            _this.samples[experimentId] = [];
-            _this.theoreticalYieldService.loadSamples(experimentId)
-                .then(function (data) {
-                data.data.forEach(function (sample) {
-                    _this.samples[experimentId].push({
-                        value: sample.id,
-                        display: sample.name
-                    });
-                });
-            });
-        });
-    };
-    UploadController.prototype.hello = function () {
-        console.info('hello ballo...?');
-    };
-    UploadController.prototype.uploadFile = function () {
-        console.info('hello upload...?');
-        if (file) {
-            file.upload = Upload.upload({
-                // url: 'http://localhost:7000',
-                data: { file: file }
-            });
+    UploadController.prototype.buildFileList = function (what) {
+        var fileList = [];
+        for (var i = 0; i < this.data[what].order.length; i++) {
+            if (this.data[what].files[this.data[what].order[i]]) {
+                fileList.push(this.data[what].files[this.data[what].order[i]]);
+            }
         }
+        return fileList;
     };
     UploadController.prototype.submit = function () {
         var _this = this;
-        var currentSample = this.searchTexts['samples'];
-        this.isWaiting = true;
-        this.theoreticalYieldService.sampleYields(currentSample)
-            .then(function (data) {
-            _this.isWaiting = false;
-            _this.data[currentSample] = data.data;
-            angular.forEach(_this.data[currentSample], function (phaseYields, phase) {
-                angular.forEach(phaseYields.metabolites, function (metaboliteYield, metabolite) {
-                    var id = 'plot_' + phase + '_' + metabolite;
-                    angular.element(document.getElementById(id)).ready(function () { return _this.plotService.plotPhase(id, metabolite, phaseYields['growth-rate'], metaboliteYield); });
-                });
-            });
-        }, 
-        // Error
-        function (_a) {
-            var status = _a[0], dataResponse = _a[1];
-            _this.isWaiting = false;
-        });
+        for (var what in this.data) {
+            if (this.data.hasOwnProperty(what)) {
+                var fileList = this.buildFileList(what);
+                if (fileList.length == this.data[what].order.length) {
+                    this.isWaiting = true;
+                    this.data[what].status = 'na';
+                    var data = { file: fileList, what: what, project_id: 'TST' };
+                    this.uploadService.uploadFile(data)
+                        .then(function (what, ref) {
+                        return function (response) {
+                            ref.isWaiting = false;
+                            ref.data[what].response = response.data;
+                            console.log(response.data.valid);
+                            if (response.data.valid) {
+                                ref.data[what].status = 'ok';
+                            }
+                            else {
+                                ref.data[what].status = 'ng';
+                            }
+                        };
+                    }(what, this), 
+                    //error
+                    function (_a) {
+                        var status = _a[0], dataResponse = _a[1];
+                        console.log(status);
+                        console.log(dataResponse);
+                        _this.isWaiting = false;
+                    });
+                }
+            }
+        }
     };
     return UploadController;
 }());

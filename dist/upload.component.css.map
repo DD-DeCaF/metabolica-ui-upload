@@ -1,1 +1,1 @@
-{"version":3,"sources":[],"names":[],"mappings":"","file":"upload.component.css","sourcesContent":[]}
+{"version":3,"sources":["upload.component.css"],"names":[],"mappings":"AAAA;CACC,mCAAmC;CACnC,0BAA0B;CAC1B,aAAa;CACb","file":"upload.component.css","sourcesContent":["table, td {\n\tborder-bottom: 1px solid gainsboro;\n\tborder-collapse: collapse;\n\tpadding: 5px;\n}\n"]}
