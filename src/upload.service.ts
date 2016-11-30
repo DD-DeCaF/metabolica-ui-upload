@@ -19,7 +19,7 @@ export class UploadService {
 
 	uploadFile(data) {
 		return this.ngUpload.upload({
-			url: 'http://localhost:8000/upload',
+			url: API_ROOT_URL + '/upload',
 			data: data,
 			method: 'POST'
 		}).then(function (resp) {

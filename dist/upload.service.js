@@ -1,6 +1,7 @@
 "use strict";
 /// <reference path="../typings/index.d.ts"/>
 require('ng-file-upload');
+var constants_1 = require('./constants');
 var uploadService = angular.module('uploadService', ['ngFileUpload']);
 function fileNames(files) {
     return files.map(function (a) { return a.name; });
@@ -11,7 +12,7 @@ var UploadService = (function () {
     }
     UploadService.prototype.uploadFile = function (data) {
         return this.ngUpload.upload({
-            url: 'http://localhost:8000/upload',
+            url: constants_1.API_ROOT_URL + '/upload',
             data: data,
             method: 'POST'
         }).then(function (resp) {
