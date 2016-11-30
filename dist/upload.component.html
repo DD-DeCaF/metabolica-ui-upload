@@ -5,10 +5,7 @@
 
 
 	<div ng-repeat="item in UploadController.data" layout="row" layout-padding layout-wrap>
-		<div flex="100">
-			{{item.what}} upload
-			<md-button ng-click="UploadController.help(item.what)">details</md-button>
-		</div>
+		<div flex="100"><h3>{{item.what}} upload</h3></div>
 
 		<div flex="100" ng-repeat="inputFile in UploadController.data[item.what].order" layout-column>
 			<div flex>
@@ -26,7 +23,7 @@
 						   ngf-select="UploadController.setFile($file, item.what, inputFile)">{{item.what}}
 					{{inputFile}}
 				</md-button>
-
+			<md-button ng-click="UploadController.help(item.what)">details</md-button>
 			</div>
 
 		</div>
@@ -37,6 +34,7 @@
 
 	<div layout="row">
 		<md-button class="md-raised md-primary" ng-click="UploadController.submit()">submit</md-button>
+		<md-button class="md-raised" ng-click="UploadController.clear()">clear</md-button>
 	</div>
 
 	<md-progress-linear ng-if="UploadController.isWaiting" md-mode="indeterminate"></md-progress-linear>
