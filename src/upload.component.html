@@ -1,27 +1,48 @@
 <md-content class="layout-padding" layout="column" ng-cloak>
-	<div ng-repeat="item in UploadController.data">
-		<div ng-repeat="inputFile in UploadController.data[item.what].order" layout="row"
-			 layout-align="space-between start">
-			<div>
+	<div>Choose one or more csv text files to upload and hit the submit button. Files are inspected for syntax and
+		organization prior to upload.
+	</div>
+
+
+	<div ng-repeat="item in UploadController.data" layout="row" layout-padding layout-wrap>
+		<div flex="100">
+			{{item.what}} upload
+			<md-button ng-click="UploadController.help(item.what)">details</md-button>
+		</div>
+
+		<div flex="100" ng-repeat="inputFile in UploadController.data[item.what].order" layout-column>
+			<div flex>
 				<md-icon ng-if="UploadController.data[item.what].status == 'ok'" md-font-set="material-icons"> done
 				</md-icon>
 				<md-icon ng-if="UploadController.data[item.what].status == 'ng'" md-font-set="material-icons"> error
 				</md-icon>
-				<md-icon ng-if="UploadController.data[item.what].status == 'na'" md-font-set="material-icons"> attach_file
+				<md-icon ng-if="UploadController.data[item.what].status == 'na'" md-font-set="material-icons">
+					attach_file
 				</md-icon>
 				{{UploadController.data[item.what].files[inputFile].name}}
-				<br>
+			</div>
+			<div>
 				<md-button class="md-raised"
 						   ngf-select="UploadController.setFile($file, item.what, inputFile)">{{item.what}}
 					{{inputFile}}
 				</md-button>
+
 			</div>
+
 		</div>
+
 	</div>
+
+	</div>
+
 	<div layout="row">
 		<md-button class="md-raised md-primary" ng-click="UploadController.submit()">submit</md-button>
 	</div>
+
 	<md-progress-linear ng-if="UploadController.isWaiting" md-mode="indeterminate"></md-progress-linear>
+
+	<div flex="100" ng-bind-html="UploadController.currentHelp"></div>
+
 	<div ng-repeat="item in UploadController.data">
 		<div ng-if="UploadController.data[item.what].status == 'ng'">
 			<div ng-repeat="inputFile in UploadController.data[item.what].order">
