@@ -1,1 +1,1 @@
-{"version":3,"sources":["constants.ts"],"names":[],"mappings":";AAAa,oBAAY,GAAG,wBAAwB,CAAC;AACrD,kDAAkD","file":"constants.js","sourcesContent":["export const API_ROOT_URL = 'http://api.dd-decaf.eu';\n// export const API_ROOL_URL = 'http://localhost';\n"]}
+{"version":3,"sources":["constants.ts"],"names":[],"mappings":";AAAA,wDAAwD;AAC3C,oBAAY,GAAG,uBAAuB,CAAC","file":"constants.js","sourcesContent":["// export const API_ROOT_URL = 'http://api.dd-decaf.eu';\nexport const API_ROOT_URL = 'http://localhost:8000';\n"]}

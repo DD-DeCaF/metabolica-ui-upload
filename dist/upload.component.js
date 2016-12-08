@@ -32,18 +32,18 @@ var UploadController = (function () {
         this.data = {
             media: {
                 files: { file: '' }, status: 'na', what: 'media', order: ['file'],
-                description: "\n                <p>\n\t\t\t    <a href=\"https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/media.csv\">Media file</a> \n\t\t\t    lists one or more medium with  <a href=\"https://www.ebi.ac.uk/chebi\">chebi</a> \n\t\t\t    names of the ingredient and concentrations</li> \n\t\t\t    </p>\n\t\t\t   "
+                description: "\n<p>\n<a href=\"https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/media.csv\">Media file</a> \nlists one or more medium with  <a href=\"https://www.ebi.ac.uk/chebi\">chebi</a> \nnames of the ingredient and concentrations</li> \n</p>\n"
             },
             strains: {
                 files: { file: '' }, status: 'na', what: 'strains', order: ['file'],
-                description: "\n                <p>\n\t\t\t    <a href=\"https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/strains.csv\">\n\t\t\t    Strains file</a> lists one strain per row.\n\t\t\t    </p>\n\t\t\t    "
+                description: "\n<p>\n<a href=\"https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/strains.csv\">\nStrains file</a> lists one strain per row.\n</p>\n"
             },
             experiment: {
                 files: { samples: '', physiology: '' },
                 status: 'na',
                 what: 'experiment',
                 order: ['samples file', 'physiology file'],
-                description: "\n                <p>\n\t\t\t\tUploading experiment details and physiological measurements is done with two files. \n\t\t        <a href=\"https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/samples.csv\">\n\t\t        Samples file</a> and the \n\t\t        <a href=\"https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/physiology.csv\">\n\t\t\t    physiology file</a>   \n\t\t\t\tThe first (samples file) should have one row per reactor (sample) and the following columns:\n\t\t\t\t</p>\n\t\t\t\t\n\t\t\t    <p>\n\t\t\t    For every row in the samples file, there must furthermore be one additional column \n\t\t\t    in the physiology file listing measurements for that sample. The name of that corresponding column must\n\t\t\t    be {experiment}_{reactor} e.g. foo_A1\n\t\t\t    </p>\n\t\t\t    \n"
+                description: "\n<p>\nUploading experiment details and physiological measurements is done with two files. \n<a href=\"https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/samples.csv\">\nSamples file</a> and the \n<a href=\"https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/physiology.csv\">\nphysiology file</a>   \nThe first (samples file) should have one row per reactor (sample) and the following columns:\n</p>\n\n<p>\nFor every row in the samples file, there must furthermore be one additional column \nin the physiology file listing measurements for that sample. The name of that corresponding column must\nbe {experiment}_{reactor} e.g. foo_A1\n</p>\n"
             }
         };
     }
@@ -78,7 +78,7 @@ var UploadController = (function () {
         for (var what in this.data) {
             if (this.data.hasOwnProperty(what)) {
                 var fileList = this.buildFileList(what);
-                if (fileList.length == this.data[what].order.length) {
+                if (fileList.length === this.data[what].order.length) {
                     this.isWaiting = true;
                     this.data[what].status = 'na';
                     var data = { file: fileList, what: what, project_id: 'TST' };
@@ -87,7 +87,7 @@ var UploadController = (function () {
                         return function (response) {
                             ref.isWaiting = false;
                             ref.data[what].response = response.data;
-                            console.log(response.data.valid);
+                            // console.log(response.data.valid);
                             if (response.data.valid) {
                                 ref.data[what].status = 'ok';
                             }
@@ -96,11 +96,11 @@ var UploadController = (function () {
                             }
                         };
                     }(what, this), 
-                    //error
+                    // error
                     function (_a) {
                         var status = _a[0], dataResponse = _a[1];
-                        console.log(status);
-                        console.log(dataResponse);
+                        // console.log(status);
+                        // console.log(dataResponse);
                         _this.isWaiting = false;
                     });
                 }

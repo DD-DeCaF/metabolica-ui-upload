@@ -1,50 +1,49 @@
-<md-content class="layout-padding" layout="column" ng-cloak>
-	<div>Choose one or more csv text files to upload and hit the submit button. Files are inspected for syntax and
-		organization prior to upload.
-	</div>
+<md-content>
+	<div class="layout-padding" layout="column">
+		<div>Choose one or more csv text files to upload and hit the submit button. Files are inspected for syntax and
+			organization prior to upload.
+		</div>
 
 
-	<div ng-repeat="item in UploadController.data" layout="row" layout-padding layout-wrap>
-		<div flex="100"><h3>{{item.what}} upload</h3></div>
+		<div ng-repeat="item in UploadController.data" layout="row" layout-padding layout-wrap>
+			<div flex="100"><h3>{{item.what}} upload</h3></div>
 
-		<div flex="100" ng-repeat="inputFile in UploadController.data[item.what].order" layout-column>
-			<div flex>
-				<md-icon ng-if="UploadController.data[item.what].status == 'ok'" md-font-set="material-icons"> done
-				</md-icon>
-				<md-icon ng-if="UploadController.data[item.what].status == 'ng'" md-font-set="material-icons"> error
-				</md-icon>
-				<md-icon ng-if="UploadController.data[item.what].status == 'na'" md-font-set="material-icons">
-					attach_file
-				</md-icon>
-				{{UploadController.data[item.what].files[inputFile].name}}
-			</div>
-			<div>
-				<md-button class="md-raised"
-						   ngf-select="UploadController.setFile($file, item.what, inputFile)">{{item.what}}
-					{{inputFile}}
-				</md-button>
-			<md-button ng-click="UploadController.help(item.what)">details</md-button>
+			<div flex="100" ng-repeat="inputFile in UploadController.data[item.what].order" layout-column>
+				<div flex>
+					<md-icon ng-if="UploadController.data[item.what].status == 'ok'" md-font-set="material-icons"> done
+					</md-icon>
+					<md-icon ng-if="UploadController.data[item.what].status == 'ng'" md-font-set="material-icons"> error
+					</md-icon>
+					<md-icon ng-if="UploadController.data[item.what].status == 'na'" md-font-set="material-icons">
+						attach_file
+					</md-icon>
+					{{UploadController.data[item.what].files[inputFile].name}}
+				</div>
+				<div>
+					<md-button class="md-raised"
+							   ngf-select="UploadController.setFile($file, item.what, inputFile)">{{item.what}}
+						{{inputFile}}
+					</md-button>
+					<md-button ng-click="UploadController.help(item.what)">details</md-button>
+				</div>
+
 			</div>
 
 		</div>
 
-	</div>
 
-	</div>
+		<div layout="row">
+			<md-button class="md-raised md-primary" ng-click="UploadController.submit()">submit</md-button>
+			<md-button class="md-raised" ng-click="UploadController.clear()">clear</md-button>
+		</div>
 
-	<div layout="row">
-		<md-button class="md-raised md-primary" ng-click="UploadController.submit()">submit</md-button>
-		<md-button class="md-raised" ng-click="UploadController.clear()">clear</md-button>
-	</div>
+		<md-progress-linear ng-if="UploadController.isWaiting" md-mode="indeterminate"></md-progress-linear>
 
-	<md-progress-linear ng-if="UploadController.isWaiting" md-mode="indeterminate"></md-progress-linear>
+		<div flex="100" ng-bind-html="UploadController.currentHelp"></div>
 
-	<div flex="100" ng-bind-html="UploadController.currentHelp"></div>
-
-	<div ng-repeat="item in UploadController.data">
-		<div ng-if="UploadController.data[item.what].status == 'ng'">
-			<div ng-repeat="inputFile in UploadController.data[item.what].order">
-				<h3>Uploaded {{item.what}} {{inputFile}} has some issues..</h3>
+		<div ng-repeat="item in UploadController.data">
+			<div ng-if="UploadController.data[item.what].status == 'ng'">
+				<h3>Submitted {{item.what}} data has some issues..</h3>
 				<table>
 					<tr ng-repeat="err in UploadController.data[item.what].response.tables[0].errors">
 						<td>{{err.message}}</td>
@@ -53,6 +52,4 @@
 			</div>
 		</div>
 	</div>
-
 </md-content>
-
