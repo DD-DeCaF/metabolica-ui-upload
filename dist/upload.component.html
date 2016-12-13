@@ -1,12 +1,21 @@
 <md-content>
 	<div class="layout-padding" layout="column">
-		<div>Choose one or more csv text files to upload and hit the submit button. Files are inspected for syntax and
-			organization prior to upload.
+		<div>
+			<div flex="100">
+				<h3>Choose project to upload data to</h3>
+				<md-select ng-model="UploadController.selected_project" aria-label="project">
+					<md-optgroup label="projects">
+						<md-option ng-repeat="item in UploadController.projects" ng-value="item.value">{{item.display}}
+						</md-option>
+					</md-optgroup>
+				</md-select>
+			</div>
+			<h3>Choose one or more csv text files to upload and hit the submit button. Files are inspected for syntax
+				and organization prior to upload.</h3>
 		</div>
 
-
 		<div ng-repeat="item in UploadController.data" layout="row" layout-padding layout-wrap>
-			<div flex="100"><h3>{{item.what}} upload</h3></div>
+			<div flex="100"><h4>{{item.what}}</h4></div>
 
 			<div flex="100" ng-repeat="inputFile in UploadController.data[item.what].order" layout-column>
 				<div flex>
@@ -21,16 +30,15 @@
 				</div>
 				<div>
 					<md-button class="md-raised"
-							   ngf-select="UploadController.setFile($file, item.what, inputFile)">{{item.what}}
+							   ngf-select="UploadController.setFile($file, item.what, inputFile)">
 						{{inputFile}}
 					</md-button>
-					<md-button ng-click="UploadController.help(item.what)">details</md-button>
+					<md-button ng-click="UploadController.showHelpAlert(inputFile)">details</md-button>
 				</div>
 
 			</div>
 
 		</div>
-
 
 		<div layout="row">
 			<md-button class="md-raised md-primary" ng-click="UploadController.submit()">submit</md-button>
@@ -38,8 +46,6 @@
 		</div>
 
 		<md-progress-linear ng-if="UploadController.isWaiting" md-mode="indeterminate"></md-progress-linear>
-
-		<div flex="100" ng-bind-html="UploadController.currentHelp"></div>
 
 		<div ng-repeat="item in UploadController.data">
 			<div ng-if="UploadController.data[item.what].status == 'ng'">

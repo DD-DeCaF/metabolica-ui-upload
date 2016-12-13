@@ -1,6 +1,8 @@
 "use strict";
 /// <reference path="../typings/index.d.ts"/>
 var angular = require('angular');
+require('angular-material');
+//docs https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/angular-material/angular-material.d.ts#L30
 // noinspection TypeScriptCheckImport
 var decaf_common_1 = require('decaf-common');
 require('./upload.component.css!');
@@ -24,31 +26,71 @@ upload.config(function (platformProvider) {
     });
 });
 var UploadController = (function () {
-    function UploadController($timeout, $sce, UploadService) {
+    function UploadController($timeout, $sce, $mdDialog, UploadService) {
         this.uploadService = UploadService;
         this.$timeout = $timeout;
         this.$sce = $sce;
+        this.$mdDialog = $mdDialog;
         this.isWaiting = false;
+        this.expectedFields = [];
+        this.projects = [];
         this.data = {
             media: {
-                files: { file: '' }, status: 'na', what: 'media', order: ['file'],
-                description: "\n<p>\n<a href=\"https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/media.csv\">Media file</a> \nlists one or more medium with  <a href=\"https://www.ebi.ac.uk/chebi\">chebi</a> \nnames of the ingredient and concentrations</li> \n</p>\n"
+                files: { media: '' }, status: 'na', what: 'media', order: ['media']
             },
             strains: {
-                files: { file: '' }, status: 'na', what: 'strains', order: ['file'],
-                description: "\n<p>\n<a href=\"https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/strains.csv\">\nStrains file</a> lists one strain per row.\n</p>\n"
+                files: { strains: '' }, status: 'na', what: 'strains', order: ['strains']
             },
-            experiment: {
-                files: { samples: '', physiology: '' },
+            fermentation: {
+                files: { sample_information: '', physiology: '' },
                 status: 'na',
-                what: 'experiment',
-                order: ['samples file', 'physiology file'],
-                description: "\n<p>\nUploading experiment details and physiological measurements is done with two files. \n<a href=\"https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/samples.csv\">\nSamples file</a> and the \n<a href=\"https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/physiology.csv\">\nphysiology file</a>   \nThe first (samples file) should have one row per reactor (sample) and the following columns:\n</p>\n\n<p>\nFor every row in the samples file, there must furthermore be one additional column \nin the physiology file listing measurements for that sample. The name of that corresponding column must\nbe {experiment}_{reactor} e.g. foo_A1\n</p>\n"
+                what: 'fermentation',
+                order: ['sample_information', 'physiology'],
+            },
+            screen: {
+                files: { screen: '' }, status: 'na', what: 'screen', order: ['screen']
             }
         };
+        this.getProjects();
+        this.selected_project = '';
     }
-    UploadController.prototype.help = function (what) {
-        this.currentHelp = this.$sce.trustAsHtml(this.data[what].description);
+    UploadController.prototype.getSchema = function (inputFile) {
+        var _this = this;
+        this.expectedFields = [];
+        this.uploadService.getSchema(inputFile)
+            .then(function (data) {
+            data.data.fields.forEach(function (value) {
+                _this.expectedFields.push(value);
+            });
+        });
+    };
+    UploadController.prototype.getProjects = function () {
+        var _this = this;
+        this.uploadService.getProjects()
+            .then(function (data) {
+            data.data.forEach(function (value) {
+                _this.projects.push(value);
+            });
+        });
+    };
+    UploadController.prototype.showHelpAlert = function (inputFile) {
+        this.getSchema(inputFile);
+        this.$mdDialog.show({
+            templateUrl: 'dialog-template.html',
+            parent: angular.element(document.querySelector('#popupContainer')),
+            clickOutsideToClose: true,
+            locals: {
+                expectedFields: this.expectedFields,
+                inputFile: inputFile
+            },
+            controller: function ($scope, $mdDialog, expectedFields, inputFile) {
+                $scope.expectedFields = expectedFields;
+                $scope.inputFile = inputFile;
+                $scope.close = function () {
+                    $mdDialog.hide();
+                };
+            }
+        });
     };
     UploadController.prototype.setFile = function (file, what, which) {
         this.data[what].files[which] = file;
@@ -81,7 +123,7 @@ var UploadController = (function () {
                 if (fileList.length === this.data[what].order.length) {
                     this.isWaiting = true;
                     this.data[what].status = 'na';
-                    var data = { file: fileList, what: what, project_id: 'TST' };
+                    var data = { file: fileList, what: what, project_id: this.selected_project };
                     this.uploadService.uploadFile(data)
                         .then(function (what, ref) {
                         return function (response) {

@@ -3,13 +3,23 @@
 require('ng-file-upload');
 var constants_1 = require('./constants');
 var uploadService = angular.module('uploadService', ['ngFileUpload']);
-// function fileNames(files) {
-// 	return files.map(function(a) { return a.name} )
-// }
 var UploadService = (function () {
-    function UploadService(Upload) {
+    function UploadService(Upload, $http) {
         this.ngUpload = Upload;
+        this.$http = $http;
     }
+    UploadService.prototype.getSchema = function (what) {
+        return this.$http({
+            method: 'GET',
+            url: (constants_1.API_ROOT_URL + "/upload/schema/") + what
+        });
+    };
+    UploadService.prototype.getProjects = function () {
+        return this.$http({
+            method: 'GET',
+            url: constants_1.API_ROOT_URL + "/upload/list_projects"
+        });
+    };
     UploadService.prototype.uploadFile = function (data) {
         return this.ngUpload.upload({
             url: constants_1.API_ROOT_URL + '/upload',

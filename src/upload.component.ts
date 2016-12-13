@@ -1,5 +1,7 @@
 /// <reference path="../typings/index.d.ts"/>
 import * as angular from 'angular';
+import 'angular-material';
+//docs https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/angular-material/angular-material.d.ts#L30
 
 // noinspection TypeScriptCheckImport
 import {dirname} from 'decaf-common';
@@ -31,62 +33,79 @@ class UploadController {
 	isWaiting: boolean;
 	uploadService: UploadService;
 	data: any;
-	currentHelp: string;
+	expectedFields: any[];
+	projects: any[];
+	selected_project: string;
+	private $mdDialog: angular.material.IDialogService;
 	private $timeout: angular.ITimeoutService;
 	private $sce: angular.ISCEService;
 
-	constructor($timeout, $sce, UploadService: UploadService) {
+	constructor($timeout, $sce, $mdDialog, UploadService:UploadService) {
 		this.uploadService = UploadService;
 		this.$timeout = $timeout;
 		this.$sce = $sce;
+		this.$mdDialog = $mdDialog;
 		this.isWaiting = false;
+		this.expectedFields = [];
+		this.projects = [];
 		this.data = {
 			media: {
-				files: {file: ''}, status: 'na', what: 'media', order: ['file'],
-				description: `
-<p>
-<a href="https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/media.csv">Media file</a> 
-lists one or more medium with  <a href="https://www.ebi.ac.uk/chebi">chebi</a> 
-names of the ingredient and concentrations</li> 
-</p>
-`
+				files: {media: ''}, status: 'na', what: 'media', order: ['media']
 			},
 			strains: {
-				files: {file: ''}, status: 'na', what: 'strains', order: ['file'],
-				description: `
-<p>
-<a href="https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/strains.csv">
-Strains file</a> lists one strain per row.
-</p>
-`
+				files: {strains: ''}, status: 'na', what: 'strains', order: ['strains']
 			},
-			experiment: {
-				files: {samples: '', physiology: ''},
+			fermentation: {
+				files: {sample_information: '', physiology: ''},
 				status: 'na',
-				what: 'experiment',
-				order: ['samples file', 'physiology file'],
-				description: `
-<p>
-Uploading experiment details and physiological measurements is done with two files. 
-<a href="https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/samples.csv">
-Samples file</a> and the 
-<a href="https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/physiology.csv">
-physiology file</a>   
-The first (samples file) should have one row per reactor (sample) and the following columns:
-</p>
-
-<p>
-For every row in the samples file, there must furthermore be one additional column 
-in the physiology file listing measurements for that sample. The name of that corresponding column must
-be {experiment}_{reactor} e.g. foo_A1
-</p>
-`
+				what: 'fermentation',
+				order: ['sample_information', 'physiology'],
+			},
+			screen: {
+				files: {screen: ''}, status: 'na', what: 'screen', order: ['screen']
 			}
 		};
+		this.getProjects();
+		this.selected_project = '';
 	}
 
-	help(what) {
-		this.currentHelp = this.$sce.trustAsHtml(this.data[what].description);
+	getSchema(inputFile) {
+		this.expectedFields = [];
+		this.uploadService.getSchema(inputFile)
+			.then((data: any) => {
+				data.data.fields.forEach((value) => {
+					this.expectedFields.push(value)
+				});
+			});
+	}
+
+	getProjects() {
+		this.uploadService.getProjects()
+			.then((data:any) => {
+				data.data.forEach((value) => {
+					this.projects.push(value)
+				});
+			});
+	}
+
+	showHelpAlert(inputFile) {
+		this.getSchema(inputFile);
+		this.$mdDialog.show({
+			templateUrl: 'dialog-template.html',
+			parent: angular.element(document.querySelector('#popupContainer')),
+			clickOutsideToClose: true,
+			locals: {
+				expectedFields: this.expectedFields,
+				inputFile: inputFile
+			},
+            controller($scope, $mdDialog: ng.material.IDialogService, expectedFields, inputFile) {
+				$scope.expectedFields = expectedFields;
+				$scope.inputFile = inputFile;
+                $scope.close = () => {
+                    $mdDialog.hide();
+                };
+            }
+		});
 	}
 
 	setFile(file, what, which) {
@@ -122,7 +141,7 @@ be {experiment}_{reactor} e.g. foo_A1
 				if (fileList.length === this.data[what].order.length) {
 					this.isWaiting = true;
 					this.data[what].status = 'na';
-					var data = {file: fileList, what: what, project_id: 'TST'};
+					var data = {file: fileList, what: what, project_id: this.selected_project};
 					this.uploadService.uploadFile(data)
 						.then(function (what, ref) {
 								return function (response) {

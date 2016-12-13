@@ -4,18 +4,29 @@ import {API_ROOT_URL} from './constants';
 
 const uploadService = angular.module('uploadService', ['ngFileUpload']);
 
-// function fileNames(files) {
-// 	return files.map(function(a) { return a.name} )
-// }
-
 
 export class UploadService {
-	ngUpload:angular.angularFileUpload.IUploadService;
+	ngUpload: angular.angularFileUpload.IUploadService;
+	private $http: angular.IHttpService;
 
-	constructor(Upload: angular.angularFileUpload.IUploadService) {
+	constructor(Upload: angular.angularFileUpload.IUploadService, $http) {
 		this.ngUpload = Upload;
+		this.$http = $http;
 	}
 
+	getSchema(what) {
+		return this.$http({
+			method: 'GET',
+			url: `${API_ROOT_URL}/upload/schema/` + what
+		});
+	}
+
+	getProjects() {
+		return this.$http({
+			method: 'GET',
+			url: `${API_ROOT_URL}/upload/list_projects`
+		});
+	}
 
 	uploadFile(data) {
 		return this.ngUpload.upload({
