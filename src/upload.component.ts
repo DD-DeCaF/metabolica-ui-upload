@@ -118,6 +118,7 @@ class UploadController {
 				for (var key in this.data[what].files) {
 					if (this.data[what].files.hasOwnProperty(key)) {
 						this.data[what].files[key] = '';
+						this.data[what].status = 'na';
 					}
 				}
 			}

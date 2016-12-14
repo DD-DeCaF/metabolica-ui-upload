@@ -27,13 +27,14 @@
 						attach_file
 					</md-icon>
 					{{UploadController.data[item.what].files[inputFile].name}}
+					<i ng-if="UploadController.data[item.what].status == 'ng'">upload failed, see issues at bottom
+						of page</i>
 				</div>
 				<div>
-					<md-button class="md-raised"
-							   ngf-select="UploadController.setFile($file, item.what, inputFile)">
-						{{inputFile}}
+					<md-button ngf-select="UploadController.setFile($file, item.what, inputFile)">
+						choose file
 					</md-button>
-					<md-button ng-click="UploadController.showHelpAlert(inputFile)">details</md-button>
+					<md-button ng-click="UploadController.showHelpAlert(inputFile)">file schema..</md-button>
 				</div>
 
 			</div>
@@ -41,8 +42,8 @@
 		</div>
 
 		<div layout="row">
-			<md-button class="md-raised md-primary" ng-click="UploadController.submit()">submit</md-button>
-			<md-button class="md-raised" ng-click="UploadController.clear()">clear</md-button>
+			<md-button class="md-primary" ng-click="UploadController.submit()">submit</md-button>
+			<md-button ng-click="UploadController.clear()">clear</md-button>
 		</div>
 
 		<md-progress-linear ng-if="UploadController.isWaiting" md-mode="indeterminate"></md-progress-linear>
