@@ -36,6 +36,7 @@ class UploadController {
 	expectedFields:any[];
 	projects:any[];
 	selected_project:string;
+	examples:any;
 	private $mdDialog:angular.material.IDialogService;
 	private $timeout:angular.ITimeoutService;
 	private $sce:angular.ISCEService;
@@ -59,11 +60,19 @@ class UploadController {
 				files: {sample_information: '', physiology: ''},
 				status: 'na',
 				what: 'fermentation',
-				order: ['sample_information', 'physiology'],
+				order: ['sample_information', 'physiology']
 			},
 			screen: {
-				files: {screen: ''}, status: 'na', what: 'screen', order: ['screen']
+				files: {screen: ''}, status: 'na', what: 'screen', order: ['screen'],
 			}
+		};
+		this.examples = {
+			screen: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/screening.csv',
+			sample_information: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/samples.csv',
+			physiology: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/physiology.csv',
+			strains: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/strains.csv',
+			media: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/media.csv'
+
 		};
 		this.getProjects();
 		this.selected_project = '';
@@ -104,8 +113,9 @@ class UploadController {
 
         <md-dialog-content>
             <div class="md-dialog-content">
-                The input must be plain text comma separated value (csv) file with columns listed below. Columns must be
-                present in the indicated order but cells can be left empty unless required.
+                The input (<a href="{{example}}" target="_blank">example</a>) must be plain text comma separated value (csv) file 
+                with columns listed below. Columns must be present in the indicated order but cells can be left 
+                empty unless required. 
                 <md-list>
                     <md-list-item ng-repeat="field in expectedFields">
                         <p><b>{{field.name}}</b>, {{field.type}}: {{field.title}}
@@ -130,10 +140,12 @@ class UploadController {
 			clickOutsideToClose: true,
 			locals: {
 				expectedFields: this.expectedFields,
-				inputFile: inputFile
+				inputFile: inputFile,
+				example: this.examples[inputFile]
 			},
-			controller($scope, $mdDialog:ng.material.IDialogService, expectedFields, inputFile) {
+			controller($scope, $mdDialog:ng.material.IDialogService, expectedFields, inputFile, example) {
 				$scope.expectedFields = expectedFields;
+				$scope.example = example;
 				$scope.inputFile = inputFile;
 				$scope.close = () => {
 					$mdDialog.hide();
@@ -206,4 +218,6 @@ class UploadController {
 	}
 }
 
-export default upload;
+export
+default
+upload;

@@ -45,11 +45,18 @@ var UploadController = (function () {
                 files: { sample_information: '', physiology: '' },
                 status: 'na',
                 what: 'fermentation',
-                order: ['sample_information', 'physiology'],
+                order: ['sample_information', 'physiology']
             },
             screen: {
-                files: { screen: '' }, status: 'na', what: 'screen', order: ['screen']
+                files: { screen: '' }, status: 'na', what: 'screen', order: ['screen'],
             }
+        };
+        this.examples = {
+            screen: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/screening.csv',
+            sample_information: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/samples.csv',
+            physiology: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/physiology.csv',
+            strains: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/strains.csv',
+            media: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/media.csv'
         };
         this.getProjects();
         this.selected_project = '';
@@ -77,15 +84,17 @@ var UploadController = (function () {
         this.getSchema(inputFile);
         this.$mdDialog.show({
             // can't use html files as they are not moved to dist for main app
-            template: "\n<md-dialog aria-label=\"File specification for {{item}} upload\">\n    <form ng-cloak>\n        <md-toolbar>\n            <div class=\"md-toolbar-tools\">\n                <h2>File specification for {{inputFile}} upload</h2>\n                <span flex></span>\n            </div>\n        </md-toolbar>\n\n        <md-dialog-content>\n            <div class=\"md-dialog-content\">\n                The input must be plain text comma separated value (csv) file with columns listed below. Columns must be\n                present in the indicated order but cells can be left empty unless required.\n                <md-list>\n                    <md-list-item ng-repeat=\"field in expectedFields\">\n                        <p><b>{{field.name}}</b>, {{field.type}}: {{field.title}}\n                            <i ng-if=\"field.constraints.enum\">must be one of: [<i\n                                ng-repeat=\"item in field.constraints.enum\">\"{{item}}\", </i>]</i>\n                            <i ng-if=\"field.constraints.required\">(required)</i>\n                        </p>\n                    </md-list-item>\n                </md-list>\n            </div>\n        </md-dialog-content>\n\n        <md-dialog-actions layout=\"row\">\n            <span flex></span>\n            <md-button ng-click=\"close()\">\n                Close\n            </md-button>\n        </md-dialog-actions>\n    </form>\n</md-dialog>",
+            template: "\n<md-dialog aria-label=\"File specification for {{item}} upload\">\n    <form ng-cloak>\n        <md-toolbar>\n            <div class=\"md-toolbar-tools\">\n                <h2>File specification for {{inputFile}} upload</h2>\n                <span flex></span>\n            </div>\n        </md-toolbar>\n\n        <md-dialog-content>\n            <div class=\"md-dialog-content\">\n                The input (<a href=\"{{example}}\" target=\"_blank\">example</a>) must be plain text comma separated value (csv) file \n                with columns listed below. Columns must be present in the indicated order but cells can be left \n                empty unless required. \n                <md-list>\n                    <md-list-item ng-repeat=\"field in expectedFields\">\n                        <p><b>{{field.name}}</b>, {{field.type}}: {{field.title}}\n                            <i ng-if=\"field.constraints.enum\">must be one of: [<i\n                                ng-repeat=\"item in field.constraints.enum\">\"{{item}}\", </i>]</i>\n                            <i ng-if=\"field.constraints.required\">(required)</i>\n                        </p>\n                    </md-list-item>\n                </md-list>\n            </div>\n        </md-dialog-content>\n\n        <md-dialog-actions layout=\"row\">\n            <span flex></span>\n            <md-button ng-click=\"close()\">\n                Close\n            </md-button>\n        </md-dialog-actions>\n    </form>\n</md-dialog>",
             parent: angular.element(document.querySelector('#popupContainer')),
             clickOutsideToClose: true,
             locals: {
                 expectedFields: this.expectedFields,
-                inputFile: inputFile
+                inputFile: inputFile,
+                example: this.examples[inputFile]
             },
-            controller: function ($scope, $mdDialog, expectedFields, inputFile) {
+            controller: function ($scope, $mdDialog, expectedFields, inputFile, example) {
                 $scope.expectedFields = expectedFields;
+                $scope.example = example;
                 $scope.inputFile = inputFile;
                 $scope.close = function () {
                     $mdDialog.hide();
