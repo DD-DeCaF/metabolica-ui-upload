@@ -76,7 +76,8 @@ var UploadController = (function () {
     UploadController.prototype.showHelpAlert = function (inputFile) {
         this.getSchema(inputFile);
         this.$mdDialog.show({
-            templateUrl: 'dialog-template.html',
+            // can't use html files as they are not moved to dist for main app
+            template: "\n<md-dialog aria-label=\"File specification for {{item}} upload\">\n\t<form ng-cloak>\n\t\t<md-toolbar>\n\t\t\t<div class=\"md-toolbar-tools\">\n\t\t\t\t<h2>File specification for {{inputFile}} upload</h2>\n\t\t\t\t<span flex></span>\n\t\t\t</div>\n\t\t</md-toolbar>\n\n\t\t<md-dialog-content>\n\t\t\t<div class=\"md-dialog-content\">\n\t\t\t\tThe input must be plain text comma separated value (csv) file with columns listed below. Columns must be\n\t\t\t\tpresent in the indicated order but cells can be left empty unless required.\n\t\t\t\t<md-list>\n\t\t\t\t\t<md-list-item ng-repeat=\"field in expectedFields\">\n\t\t\t\t\t\t<p><b>{{field.name}}</b>, {{field.type}}: {{field.title}}\n\t\t\t\t\t\t\t<i ng-if=\"field.constraints.enum\">must be one of: [<i\n\t\t\t\t\t\t\t\tng-repeat=\"item in field.constraints.enum\">\"{{item}}\", </i>]</i>\n\t\t\t\t\t\t\t<i ng-if=\"field.constraints.required\">(required)</i>\n\t\t\t\t\t\t</p>\n\t\t\t\t\t</md-list-item>\n\t\t\t\t</md-list>\n\t\t\t</div>\n\t\t</md-dialog-content>\n\n\t\t<md-dialog-actions layout=\"row\">\n\t\t\t<span flex></span>\n\t\t\t<md-button ng-click=\"close()\">\n\t\t\t\tClose\n\t\t\t</md-button>\n\t\t</md-dialog-actions>\n\t</form>\n</md-dialog>",
             parent: angular.element(document.querySelector('#popupContainer')),
             clickOutsideToClose: true,
             locals: {
@@ -106,6 +107,7 @@ var UploadController = (function () {
                 }
             }
         }
+        this.selected_project = '';
     };
     UploadController.prototype.buildFileList = function (what) {
         var fileList = [];
@@ -118,34 +120,37 @@ var UploadController = (function () {
     };
     UploadController.prototype.submit = function () {
         var _this = this;
-        for (var what in this.data) {
-            if (this.data.hasOwnProperty(what)) {
-                var fileList = this.buildFileList(what);
-                if (fileList.length === this.data[what].order.length) {
-                    this.isWaiting = true;
-                    this.data[what].status = 'na';
-                    var data = { file: fileList, what: what, project_id: this.selected_project };
-                    this.uploadService.uploadFile(data)
-                        .then(function (what, ref) {
-                        return function (response) {
-                            ref.isWaiting = false;
-                            ref.data[what].response = response.data;
-                            // console.log(response.data.valid);
-                            if (response.data.valid) {
-                                ref.data[what].status = 'ok';
-                            }
-                            else {
-                                ref.data[what].status = 'ng';
-                            }
-                        };
-                    }(what, this), 
-                    // error
-                    function (_a) {
-                        var status = _a[0], dataResponse = _a[1];
-                        // console.log(status);
-                        // console.log(dataResponse);
-                        _this.isWaiting = false;
-                    });
+        if (this.selected_project != '') {
+            for (var what in this.data) {
+                if (this.data.hasOwnProperty(what)) {
+                    var fileList = this.buildFileList(what);
+                    if (fileList.length === this.data[what].order.length) {
+                        "o";
+                        this.isWaiting = true;
+                        this.data[what].status = 'na';
+                        var data = { file: fileList, what: what, project_id: this.selected_project };
+                        this.uploadService.uploadFile(data)
+                            .then(function (what, ref) {
+                            return function (response) {
+                                ref.isWaiting = false;
+                                ref.data[what].response = response.data;
+                                // console.log(response.data.valid);
+                                if (response.data.valid) {
+                                    ref.data[what].status = 'ok';
+                                }
+                                else {
+                                    ref.data[what].status = 'ng';
+                                }
+                            };
+                        }(what, this), 
+                        // error
+                        function (_a) {
+                            var status = _a[0], dataResponse = _a[1];
+                            // console.log(status);
+                            // console.log(dataResponse);
+                            _this.isWaiting = false;
+                        });
+                    }
                 }
             }
         }
