@@ -60,7 +60,14 @@ var UploadController = (function () {
         };
         this.getProjects();
         this.selected_project = '';
+        this.selected_upload = '';
     }
+    UploadController.prototype.selectedData = function () {
+        return this.data[this.selected_upload];
+    };
+    UploadController.prototype.selectedFile = function (inputFile) {
+        return this.data[this.selected_upload].files[inputFile];
+    };
     UploadController.prototype.getSchema = function (inputFile) {
         var _this = this;
         this.expectedFields = [];
@@ -102,8 +109,8 @@ var UploadController = (function () {
             }
         });
     };
-    UploadController.prototype.setFile = function (file, what, which) {
-        this.data[what].files[which] = file;
+    UploadController.prototype.setFile = function (file, which) {
+        this.data[this.selected_upload].files[which] = file;
     };
     UploadController.prototype.clear = function () {
         for (var what in this.data) {
@@ -116,7 +123,6 @@ var UploadController = (function () {
                 }
             }
         }
-        this.selected_project = '';
     };
     UploadController.prototype.buildFileList = function (what) {
         var fileList = [];

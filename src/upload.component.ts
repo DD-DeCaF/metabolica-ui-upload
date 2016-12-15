@@ -36,6 +36,7 @@ class UploadController {
 	expectedFields:any[];
 	projects:any[];
 	selected_project:string;
+	selected_upload:string;
 	examples:any;
 	private $mdDialog:angular.material.IDialogService;
 	private $timeout:angular.ITimeoutService;
@@ -76,6 +77,15 @@ class UploadController {
 		};
 		this.getProjects();
 		this.selected_project = '';
+		this.selected_upload = '';
+	}
+
+	selectedData() {
+		return this.data[this.selected_upload];
+	}
+
+	selectedFile(inputFile) {
+		return this.data[this.selected_upload].files[inputFile];
 	}
 
 	getSchema(inputFile) {
@@ -154,8 +164,8 @@ class UploadController {
 		});
 	}
 
-	setFile(file, what, which) {
-		this.data[what].files[which] = file;
+	setFile(file, which) {
+		this.data[this.selected_upload].files[which] = file;
 	}
 
 	clear() {
@@ -169,7 +179,6 @@ class UploadController {
 				}
 			}
 		}
-		this.selected_project = '';
 	}
 
 	buildFileList(what) {
@@ -218,6 +227,4 @@ class UploadController {
 	}
 }
 
-export
-default
-upload;
+export default upload;

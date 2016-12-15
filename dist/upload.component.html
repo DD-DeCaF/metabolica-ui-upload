@@ -2,66 +2,78 @@
 	<form name="uploadForm">
 		<div class="layout-padding" layout="column">
 			Choose a project, then one or more csv files containing the data you wish to upload.
-			<div>
-				<div flex="50">
-					<md-input-container>
-						<label>Project</label>
-						<md-select ng-model="UploadController.selected_project">
-							<md-optgroup required>
-								<md-option ng-repeat="item in UploadController.projects" ng-value="item.value">
-									{{item.display}}
-								</md-option>
-							</md-optgroup>
-						</md-select>
-					</md-input-container>
-				</div>
+
+			<div flex="50">
+				<md-input-container>
+					<label>Project</label>
+					<md-select ng-model="UploadController.selected_project">
+						<md-optgroup required>
+							<md-option ng-repeat="item in UploadController.projects" ng-value="item.value">
+								{{item.display}}
+							</md-option>
+						</md-optgroup>
+					</md-select>
+				</md-input-container>
 			</div>
 
-			<div ng-repeat="item in UploadController.data" layout="row" layout-padding layout-wrap>
-				<div flex="100"><h4>{{item.what}}</h4></div>
 
-				<div flex="100" ng-repeat="inputFile in UploadController.data[item.what].order" layout-column>
-					<div flex>
-						<md-icon ng-if="UploadController.data[item.what].status == 'ok'" md-font-set="material-icons">
-							done
-						</md-icon>
-						<md-icon ng-if="UploadController.data[item.what].status == 'ng'" md-font-set="material-icons">
-							error
-						</md-icon>
-						<md-icon ng-if="UploadController.data[item.what].status == 'na'" md-font-set="material-icons">
-							attach_file
-						</md-icon>
-						{{UploadController.data[item.what].files[inputFile].name}}
-						<i ng-if="UploadController.data[item.what].status == 'ng'">upload failed, see issues at bottom
-							of page</i>
-					</div>
-					<div>
-						<md-button ngf-select="UploadController.setFile($file, item.what, inputFile)">
-							choose {{inputFile}} file
-						</md-button>
-						<md-button ng-click="UploadController.showHelpAlert(inputFile)">file schema..</md-button>
-					</div>
+			<div flex="50">
+				<md-input-container>
+					<label>Data type</label>
+					<md-select ng-model="UploadController.selected_upload">
+						<md-optgroup required>
+							<md-option ng-repeat="item in UploadController.data" ng-value="item.what">
+								{{item.what}}
+							</md-option>
+						</md-optgroup>
+					</md-select>
+				</md-input-container>
+			</div>
 
+
+			<div flex="100" ng-repeat="inputFile in UploadController.selectedData().order"
+				 layout-column>
+				<div flex>
+					<md-icon ng-if="UploadController.selectedData().status == 'ok'"
+							 md-font-set="material-icons">
+						done
+					</md-icon>
+					<md-icon ng-if="UploadController.selectedData().status == 'ng'"
+							 md-font-set="material-icons">
+						error
+					</md-icon>
+					<md-icon ng-if="UploadController.selectedData().status == 'na'"
+							 md-font-set="material-icons">
+						attach_file
+					</md-icon>
+					{{UploadController.selectedFile(inputFile).name}}
+					<i ng-if="UploadController.selectedData().status == 'ng'">upload failed,
+						see issues at bottom
+						of page</i>
+				</div>
+				<div>
+					<md-button ngf-select="UploadController.setFile($file, inputFile)">
+						choose {{inputFile}} file
+					</md-button>
+					<md-button ng-click="UploadController.showHelpAlert(inputFile)">file schema..</md-button>
 				</div>
 
 			</div>
 
-			<div layout="row">
+			<div ng-if="UploadController.selected_upload != ''" layout="row">
 				<md-button class="md-primary" type="submit" ng-click="UploadController.submit()">submit</md-button>
 				<md-button ng-click="UploadController.clear()">clear</md-button>
 			</div>
 
 			<md-progress-linear ng-if="UploadController.isWaiting" md-mode="indeterminate"></md-progress-linear>
 
-			<div ng-repeat="item in UploadController.data">
-				<div ng-if="UploadController.data[item.what].status == 'ng'">
-					<h3>Submitted {{item.what}} data has some issues..</h3>
-					<table>
-						<tr ng-repeat="err in UploadController.data[item.what].response.tables[0].errors">
-							<td>{{err.message}}</td>
-						</tr>
-					</table>
-				</div>
+			<div ng-if="UploadController.selectedData().status == 'ng'">
+				<h3>Submitted {{UploadController.selected_upload}} data has some issues..</h3>
+				<table>
+					<tr ng-repeat="err in UploadController.selectedData().response.tables[0].errors">
+						<td>{{err.message}}</td>
+					</tr>
+				</table>
 			</div>
 		</div>
 	</form>
