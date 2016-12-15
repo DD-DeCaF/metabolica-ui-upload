@@ -30,15 +30,15 @@ upload.config(function (platformProvider) {
 });
 
 class UploadController {
-	isWaiting: boolean;
-	uploadService: UploadService;
-	data: any;
-	expectedFields: any[];
-	projects: any[];
-	selected_project: string;
-	private $mdDialog: angular.material.IDialogService;
-	private $timeout: angular.ITimeoutService;
-	private $sce: angular.ISCEService;
+	isWaiting:boolean;
+	uploadService:UploadService;
+	data:any;
+	expectedFields:any[];
+	projects:any[];
+	selected_project:string;
+	private $mdDialog:angular.material.IDialogService;
+	private $timeout:angular.ITimeoutService;
+	private $sce:angular.ISCEService;
 
 	constructor($timeout, $sce, $mdDialog, UploadService:UploadService) {
 		this.uploadService = UploadService;
@@ -72,7 +72,7 @@ class UploadController {
 	getSchema(inputFile) {
 		this.expectedFields = [];
 		this.uploadService.getSchema(inputFile)
-			.then((data: any) => {
+			.then((data:any) => {
 				data.data.fields.forEach((value) => {
 					this.expectedFields.push(value)
 				});
@@ -94,37 +94,37 @@ class UploadController {
 			// can't use html files as they are not moved to dist for main app
 			template: `
 <md-dialog aria-label="File specification for {{item}} upload">
-	<form ng-cloak>
-		<md-toolbar>
-			<div class="md-toolbar-tools">
-				<h2>File specification for {{inputFile}} upload</h2>
-				<span flex></span>
-			</div>
-		</md-toolbar>
+    <form ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>File specification for {{inputFile}} upload</h2>
+                <span flex></span>
+            </div>
+        </md-toolbar>
 
-		<md-dialog-content>
-			<div class="md-dialog-content">
-				The input must be plain text comma separated value (csv) file with columns listed below. Columns must be
-				present in the indicated order but cells can be left empty unless required.
-				<md-list>
-					<md-list-item ng-repeat="field in expectedFields">
-						<p><b>{{field.name}}</b>, {{field.type}}: {{field.title}}
-							<i ng-if="field.constraints.enum">must be one of: [<i
-								ng-repeat="item in field.constraints.enum">"{{item}}", </i>]</i>
-							<i ng-if="field.constraints.required">(required)</i>
-						</p>
-					</md-list-item>
-				</md-list>
-			</div>
-		</md-dialog-content>
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                The input must be plain text comma separated value (csv) file with columns listed below. Columns must be
+                present in the indicated order but cells can be left empty unless required.
+                <md-list>
+                    <md-list-item ng-repeat="field in expectedFields">
+                        <p><b>{{field.name}}</b>, {{field.type}}: {{field.title}}
+                            <i ng-if="field.constraints.enum">must be one of: [<i
+                                ng-repeat="item in field.constraints.enum">"{{item}}", </i>]</i>
+                            <i ng-if="field.constraints.required">(required)</i>
+                        </p>
+                    </md-list-item>
+                </md-list>
+            </div>
+        </md-dialog-content>
 
-		<md-dialog-actions layout="row">
-			<span flex></span>
-			<md-button ng-click="close()">
-				Close
-			</md-button>
-		</md-dialog-actions>
-	</form>
+        <md-dialog-actions layout="row">
+            <span flex></span>
+            <md-button ng-click="close()">
+                Close
+            </md-button>
+        </md-dialog-actions>
+    </form>
 </md-dialog>`,
 			parent: angular.element(document.querySelector('#popupContainer')),
 			clickOutsideToClose: true,
@@ -132,13 +132,13 @@ class UploadController {
 				expectedFields: this.expectedFields,
 				inputFile: inputFile
 			},
-            controller($scope, $mdDialog: ng.material.IDialogService, expectedFields, inputFile) {
+			controller($scope, $mdDialog:ng.material.IDialogService, expectedFields, inputFile) {
 				$scope.expectedFields = expectedFields;
 				$scope.inputFile = inputFile;
-                $scope.close = () => {
-                    $mdDialog.hide();
-                };
-            }
+				$scope.close = () => {
+					$mdDialog.hide();
+				};
+			}
 		});
 	}
 
@@ -176,7 +176,7 @@ class UploadController {
 				if (this.data.hasOwnProperty(what)) {
 					var fileList = this.buildFileList(what);
 					if (fileList.length === this.data[what].order.length) {
-`o`						this.isWaiting = true;
+						this.isWaiting = true;
 						this.data[what].status = 'na';
 						var data = {file: fileList, what: what, project_id: this.selected_project};
 						this.uploadService.uploadFile(data)
