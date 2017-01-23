@@ -123,9 +123,9 @@ class UploadController {
 
         <md-dialog-content>
             <div class="md-dialog-content">
-                The input (<a href="{{example}}" target="_blank">example</a>) must be plain text comma separated value (csv) file 
-                with columns listed below. All columns must be present but their order does not matter and cells can be left 
-                empty unless marked as <i>required</i>. 
+                The input (<a href="{{example}}" target="_blank">example</a>) must be excel spreadsheets (xlsx/xls) or 
+                plain text comma separated value (csv) file with columns listed below. All columns must be present but 
+                their order does not matter and cells can be left empty unless marked as <i>required</i>. 
                 <md-list>
                     <md-list-item ng-repeat="field in expectedFields">
                         <p><b>{{field.name}}</b>, {{field.type}}: {{field.title}}
