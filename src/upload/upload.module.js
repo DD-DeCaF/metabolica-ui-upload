@@ -13,15 +13,14 @@ export const UploadModule = angular.module('upload', [
 	.config(function ($mdIconProvider, $stateProvider, appNavigationProvider) {
 		$mdIconProvider.icon('file_upload', FILEUPLOAD, 24);
 
-        appNavigationProvider.register('app.project.upload', {
+        appNavigationProvider.register('app.upload', {
             title: 'Upload data',
-            icon: 'file_upload',
-            requiresProject: true
+            icon: 'file_upload'
         });
 
         $stateProvider
             .state({
-                name: 'app.project.upload',
+                name: 'app.upload',
                 url: '/upload',
                 component: 'upload',
                 data: {

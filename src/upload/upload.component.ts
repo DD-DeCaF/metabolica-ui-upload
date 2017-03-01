@@ -171,8 +171,5 @@ class UploadController {
 export const UploadComponent: angular.IComponentOptions = {
 	controller: UploadController,
 	controllerAs: 'UploadController',
-    template: template.toString(),
-    bindings: {
-        project: '<project'
-    }
+    template: template.toString()
 };
