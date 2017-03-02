@@ -1,34 +1,34 @@
 import * as angular from 'angular';
 import 'ng-file-upload';
-import {API_ROOT_URL} from './constants';
-
 
 export class UploadService {
 	ngUpload: angular.angularFileUpload.IUploadService;
 	private $http: angular.IHttpService;
+	private api: string;
 
-	constructor(Upload: angular.angularFileUpload.IUploadService, $http) {
+	constructor(Upload: angular.angularFileUpload.IUploadService, $http, decafAPI) {
 		this.ngUpload = Upload;
 		this.$http = $http;
+		this.api = decafAPI;
 	}
 
 	getSchema(what) {
 		return this.$http({
 			method: 'GET',
-			url: `${API_ROOT_URL}/upload/schema/` + what
+			url: `${this.api}/upload/schema/` + what
 		});
 	}
 
 	getProjects() {
 		return this.$http({
 			method: 'GET',
-			url: `${API_ROOT_URL}/upload/list_projects`
+			url: `${this.api}/upload/list_projects`
 		});
 	}
 
 	uploadFile(data) {
 		return this.ngUpload.upload({
-			url: API_ROOT_URL + '/upload',
+			url: this.api + '/upload',
 			data: data,
 			method: 'POST'
 		}).then(function (resp) {
