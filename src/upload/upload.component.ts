@@ -1,8 +1,8 @@
 import * as angular from 'angular';
-import './upload.component.css';
 import {UploadService} from './upload.service';
 import * as template from './upload.component.html';
 import * as dialog_template from './dialog-template.html';
+import './upload.component.scss';
 
 
 class UploadController {
