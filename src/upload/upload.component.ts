@@ -1,33 +1,9 @@
-// <reference path="../typings/index.d.ts"/>
 import * as angular from 'angular';
-import 'angular-material';
-//docs https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/angular-material/angular-material.d.ts#L30
+import {UploadService} from './upload.service';
+import * as template from './upload.component.html';
+import * as dialog_template from './dialog-template.html';
+import './upload.component.scss';
 
-// noinspection TypeScriptCheckImport
-import {dirname} from 'decaf-common';
-import './upload.component.css!';
-import uploadService, {UploadService} from './upload.service';
-
-
-export const COMPONENT_NAME = 'upload';
-const upload = angular.module(COMPONENT_NAME, [
-	uploadService.name
-]);
-
-upload.config(function (platformProvider) {
-	platformProvider
-		.register(COMPONENT_NAME)
-		.state(COMPONENT_NAME, {
-			url: `/${COMPONENT_NAME}`,
-			views: {
-				'content@': {
-					templateUrl: `${dirname(module.id)}/upload.component.html`,
-					controller: UploadController,
-					controllerAs: 'UploadController'
-				}
-			}
-		});
-});
 
 class UploadController {
 	isWaiting:boolean;
@@ -42,8 +18,8 @@ class UploadController {
 	private $timeout:angular.ITimeoutService;
 	private $sce:angular.ISCEService;
 
-	constructor($timeout, $sce, $mdDialog, UploadService:UploadService) {
-		this.uploadService = UploadService;
+	constructor($timeout, $sce, $mdDialog, uploadService: UploadService) {
+		this.uploadService = uploadService;
 		this.$timeout = $timeout;
 		this.$sce = $sce;
 		this.$mdDialog = $mdDialog;
@@ -111,41 +87,7 @@ class UploadController {
 		this.getSchema(inputFile);
 		this.$mdDialog.show({
 			// can't use html files as they are not moved to dist for main app
-			template: `
-<md-dialog aria-label="File specification for {{item}} upload">
-    <form ng-cloak>
-        <md-toolbar>
-            <div class="md-toolbar-tools">
-                <h2>File specification for {{inputFile}} upload</h2>
-                <span flex></span>
-            </div>
-        </md-toolbar>
-
-        <md-dialog-content>
-            <div class="md-dialog-content">
-                The input (<a href="{{example}}" target="_blank">example</a>) must be excel spreadsheets (xlsx/xls) or 
-                plain text comma separated value (csv) file with columns listed below. All columns must be present but 
-                their order does not matter and cells can be left empty unless marked as <i>required</i>. 
-                <md-list>
-                    <md-list-item ng-repeat="field in expectedFields">
-                        <p><b>{{field.name}}</b>, {{field.type}}: {{field.title}}
-                            <i ng-if="field.constraints.enum">must be one of: [<i
-                                ng-repeat="item in field.constraints.enum">"{{item}}", </i>]</i>
-                            <i ng-if="field.constraints.required">(required)</i>
-                        </p>
-                    </md-list-item>
-                </md-list>
-            </div>
-        </md-dialog-content>
-
-        <md-dialog-actions layout="row">
-            <span flex></span>
-            <md-button ng-click="close()">
-                Close
-            </md-button>
-        </md-dialog-actions>
-    </form>
-</md-dialog>`,
+			template: dialog_template.toString(),
 			parent: angular.element(document.querySelector('#popupContainer')),
 			clickOutsideToClose: true,
 			locals: {
@@ -215,8 +157,6 @@ class UploadController {
 								}(what, this),
 								// error
 								([status, dataResponse]) => {
-									// console.log(status);
-									// console.log(dataResponse);
 									this.isWaiting = false;
 								}
 							);
@@ -227,4 +167,9 @@ class UploadController {
 	}
 }
 
-export default upload;
+
+export const UploadComponent: angular.IComponentOptions = {
+	controller: UploadController,
+	controllerAs: 'UploadController',
+    template: template.toString()
+};
