@@ -18,6 +18,7 @@
                             <i ng-if="field.constraints.enum">must be one of: [<i
                                 ng-repeat="item in field.constraints.enum">"{{item}}", </i>]</i>
                             <i ng-if="field.constraints.required">(required)</i>
+							<i ng-if="field.constraints.pattern">(must match: {{field.constraints.pattern}})</i>
                         </p>
                     </md-list-item>
                 </md-list>
