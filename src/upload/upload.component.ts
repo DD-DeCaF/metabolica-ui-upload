@@ -11,8 +11,8 @@ class UploadController {
     data:any;
     expectedFields:any[];
     projects:any[];
-    selected_project:string;
-    selected_upload:string;
+    selectedProject:string;
+    selectedUpload:string;
     examples:any;
     private $mdDialog:angular.material.IDialogService;
     private $timeout:angular.ITimeoutService;
@@ -41,27 +41,35 @@ class UploadController {
             },
             screen: {
                 files: {screen: ''}, status: 'na', what: 'screen', order: ['screen'],
+            },
+            fluxes: {
+                files: {fluxes: ''}, status: 'na', what: 'fluxes', order: ['fluxes'],
+            },
+            protein_abundances: {
+                files: {protein_abundances: ''}, status: 'na', what: 'protein_abundances',
+                order: ['protein_abundances'],
             }
+
         };
         this.examples = {
             screen: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/screening.csv',
             sample_information: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/samples.csv',
             physiology: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/physiology.csv',
             strains: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/strains.csv',
-            media: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/media.csv'
-
+            media: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/media.csv',
+            fluxes: 'https://github.com/DD-DeCaF/upload/blob/feat/fluxes/upload/data/examples/fluxes.csv'
         };
         this.getProjects();
-        this.selected_project = '';
-        this.selected_upload = '';
+        this.selectedProject = '';
+        this.selectedUpload = '';
     }
 
     selectedData() {
-        return this.data[this.selected_upload];
+        return this.data[this.selectedUpload];
     }
 
     selectedFile(inputFile) {
-        return this.data[this.selected_upload].files[inputFile];
+        return this.data[this.selectedUpload].files[inputFile];
     }
 
     getSchema(inputFile) {
@@ -107,7 +115,7 @@ class UploadController {
     }
 
     setFile(file, which) {
-        this.data[this.selected_upload].files[which] = file;
+        this.data[this.selectedUpload].files[which] = file;
     }
 
     clear() {
@@ -134,14 +142,14 @@ class UploadController {
     }
 
     submit() {
-        if (this.selected_project != '') {
+        if (this.selectedProject != '') {
             for (var what in this.data) {
                 if (this.data.hasOwnProperty(what)) {
                     var fileList = this.buildFileList(what);
                     if (fileList.length === this.data[what].order.length) {
                         this.isWaiting = true;
                         this.data[what].status = 'na';
-                        var data = {file: fileList, what: what, project_id: this.selected_project};
+                        var data = {file: fileList, what: what, project_id: this.selectedProject};
                         this.uploadService.uploadFile(data)
                             .then(function (what, ref) {
                                     return function (response) {
