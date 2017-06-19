@@ -168,7 +168,7 @@ class UploadController {
 }
 
 
-export const UploadComponent: angular.IComponentOptions = {
+export const UploadComponent = {
 	controller: UploadController,
 	controllerAs: 'UploadController',
     template: template.toString()
