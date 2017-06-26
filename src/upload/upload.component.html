@@ -30,6 +30,9 @@
 				</md-input-container>
 			</div>
 
+			<div ng-if="UploadController.selectedUpload != ''" layout="row">
+				<div>{{UploadController.extraInfo[UploadController.selectedUpload]}}</div>
+			</div>
 
 			<div flex="100" ng-repeat="inputFile in UploadController.selectedData().order"
 				 layout-column>

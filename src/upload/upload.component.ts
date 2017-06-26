@@ -6,19 +6,20 @@ import './upload.component.scss';
 
 
 class UploadController {
-    isWaiting:boolean;
-    uploadService:UploadService;
-    data:any;
-    expectedFields:any[];
-    projects:any[];
-    selectedProject:string;
-    selectedUpload:string;
-    examples:any;
-    private $mdDialog:angular.material.IDialogService;
-    private $timeout:angular.ITimeoutService;
-    private $sce:angular.ISCEService;
+    isWaiting: boolean;
+    uploadService: UploadService;
+    data: any;
+    expectedFields: any[];
+    projects: any[];
+    selectedProject: string;
+    selectedUpload: string;
+    examples: any;
+    extraInfo: any;
+    private $mdDialog: angular.material.IDialogService;
+    private $timeout: angular.ITimeoutService;
+    private $sce: angular.ISCEService;
 
-    constructor($timeout, $sce, $mdDialog, uploadService:UploadService) {
+    constructor($timeout, $sce, $mdDialog, uploadService: UploadService) {
         this.uploadService = uploadService;
         this.$timeout = $timeout;
         this.$sce = $sce;
@@ -59,6 +60,20 @@ class UploadController {
             media: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/media.csv',
             fluxes: 'https://github.com/DD-DeCaF/upload/blob/feat/fluxes/upload/data/examples/fluxes.csv'
         };
+        this.extraInfo = {
+            media: '',
+            strains: '',
+            fermentation: 'Fermentation data should be provided in two files, one ' +
+            'describing the samples and one providing the physiological data. Make sure that you have ' +
+            'uploaded the strains and media definitions first, as you have to refer to these as indicated ' +
+            'in file schema.',
+            screen: 'Make sure that you have uploaded media and strain definitions first as you have to refer to ' +
+            'these as indicated in the file schema.',
+            fluxes: 'Make sure that you have uploaded media and strain definitions first as you have to refer to ' +
+            'these as indicated in the file schema.',
+            protein_abundances: 'Make sure that you have uploaded media and strain definitions first as you have ' +
+            'to refer to these as indicated in the file schema.'
+        };
         this.getProjects();
         this.selectedProject = '';
         this.selectedUpload = '';
@@ -75,7 +90,7 @@ class UploadController {
     getSchema(inputFile) {
         this.expectedFields = [];
         this.uploadService.getSchema(inputFile)
-            .then((data:any) => {
+            .then((data: any) => {
                 data.data.fields.forEach((value) => {
                     this.expectedFields.push(value)
                 });
@@ -84,7 +99,7 @@ class UploadController {
 
     getProjects() {
         this.uploadService.getProjects()
-            .then((data:any) => {
+            .then((data: any) => {
                 data.data.forEach((value) => {
                     this.projects.push(value)
                 });
@@ -103,7 +118,7 @@ class UploadController {
                 inputFile: inputFile,
                 example: this.examples[inputFile]
             },
-            controller($scope, $mdDialog:ng.material.IDialogService, expectedFields, inputFile, example) {
+            controller($scope, $mdDialog: ng.material.IDialogService, expectedFields, inputFile, example) {
                 $scope.expectedFields = expectedFields;
                 $scope.example = example;
                 $scope.inputFile = inputFile;
@@ -176,7 +191,7 @@ class UploadController {
 }
 
 
-export const UploadComponent:angular.IComponentOptions = {
+export const UploadComponent: angular.IComponentOptions = {
     controller: UploadController,
     controllerAs: 'UploadController',
     template: template.toString()
