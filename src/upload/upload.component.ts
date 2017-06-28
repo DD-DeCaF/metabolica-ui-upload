@@ -58,7 +58,8 @@ class UploadController {
             physiology: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/physiology.csv',
             strains: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/strains.csv',
             media: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/media.csv',
-            fluxes: 'https://github.com/DD-DeCaF/upload/blob/feat/fluxes/upload/data/examples/fluxes.csv'
+            fluxes: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/fluxes.csv',
+            protein_abundances: 'https://github.com/DD-DeCaF/upload/blob/master/upload/data/examples/protein_abundances.csv'
         };
         this.extraInfo = {
             media: '',
