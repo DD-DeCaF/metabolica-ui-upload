@@ -4,6 +4,13 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const webpack = require('webpack');
 
 
+new webpack.EnvironmentPlugin([
+    "NODE_ENV",
+    "DECAF_API",
+    "UPLOAD_API"
+])
+
+
 module.exports = function () {
 	return {
 		entry: {
@@ -92,7 +99,7 @@ module.exports = function () {
 			proxy: {
 				'/api': {
 					// Set the following line to the address of the API you want to test against:
-					target: 'https://data.dd-decaf.eu',
+					target: process.env.DECAF_API,
 					secure: false,
 					changeOrigin: true
 				}

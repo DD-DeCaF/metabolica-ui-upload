@@ -1,5 +1,6 @@
 export class DecafAPIProvider {
-    host = 'https://api.dd-decaf.eu';
+    host = 'http://localhost:7000';
+//    host = process.env.UPLOAD_API;
 
     $get() {
         return this.host;
