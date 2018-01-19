@@ -8,7 +8,7 @@ new webpack.EnvironmentPlugin([
     "NODE_ENV",
     "DECAF_API",
     "UPLOAD_API"
-])
+]);
 
 
 module.exports = function () {
