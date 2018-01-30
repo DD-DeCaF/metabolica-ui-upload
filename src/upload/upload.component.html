@@ -78,6 +78,28 @@
           </tr>
         </table>
       </div>
+
+      <div ng-if="UploadController.selectedData().status == 'ok'">
+        <div ng-if="UploadController.selectedUpload == 'media'">
+          <a ui-sref="app.media">See all media</a>
+        </div>
+        <div ng-if="UploadController.selectedUpload == 'strains'">
+          <a ui-sref="app.project.pools({projectId: UploadController.selectedProject})">See all pools in this project</a>
+        </div>
+        <div ng-if="UploadController.selectedUpload == 'fermentation'">
+          <a ui-sref="app.project.experiments({projectId: UploadController.selectedProject})">See all experiments in this project</a>
+        </div>
+        <div ng-if="UploadController.selectedUpload == 'screen'">
+          <a ui-sref="app.project.experiments({projectId: UploadController.selectedProject})">See all experiments in this project</a>
+        </div>
+        <div ng-if="UploadController.selectedUpload == 'fluxes'">
+          <a ui-sref="app.project.experiments({projectId: UploadController.selectedProject})">See all experiments in this project</a>
+        </div>
+        <div ng-if="UploadController.selectedUpload == 'protein_abundances'">
+          <a ui-sref="app.project.experiments({projectId: UploadController.selectedProject})">See all experiments in this project</a>
+        </div>
+      </div>
+
     </div>
   </form>
 </md-content>
